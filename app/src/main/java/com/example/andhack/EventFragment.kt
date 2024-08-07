@@ -1,11 +1,7 @@
 package com.example.andhack
 
 import android.app.AlertDialog
-import android.content.Context
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,13 +16,8 @@ import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.andhack.databinding.FragmentCalendarBinding
 import com.example.andhack.databinding.FragmentEventBinding
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import com.prolificinteractive.materialcalendarview.DayViewDecorator
-import com.prolificinteractive.materialcalendarview.DayViewFacade
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import com.prolificinteractive.materialcalendarview.spans.DotSpan
 import java.util.Calendar
 
 class EventFragment : Fragment() {
@@ -45,6 +36,10 @@ class EventFragment : Fragment() {
     lateinit var etMemo: EditText
     lateinit var btnInput: Button
     lateinit var tvMemo: TextView
+    var startDate: Calendar? = null
+    var endDate: Calendar? = null
+    var startTime: Pair<Int, Int>? = null
+    var endTime: Pair<Int, Int>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,14 +67,20 @@ class EventFragment : Fragment() {
         // 달력에서 선택된 날짜 불러오기
         viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         viewModel.selectedDate.observe(viewLifecycleOwner) { date ->
-            if (date.year == null || date.month == null || date.day == null) {
-                CalendarDay.today()
-            } else {
-                CalendarDay.from(date.year, date.month, date.day)
+            val formattedDate = String.format("%04d-%02d-%02d", date.year, date.month, date.day)
+            tvStartDate.text = formattedDate
+            tvEndDate.text = formattedDate
+
+            startDate = Calendar.getInstance().apply {
+                set(date.year, date.month, date.day)
             }
-            // 선택된 날짜로 작업 수행
-            tvStartDate.text = date.toString()
-            tvEndDate.text = date.toString()
+            endDate = Calendar.getInstance().apply {
+                set(date.year, date.month, date.day)
+            }
+
+            tvEndDate.setOnClickListener {
+                showDatePicker(tvEndDate, false)
+            }
         }
 
         // 뒤로가기 버튼
@@ -107,19 +108,19 @@ class EventFragment : Fragment() {
 
         // 일정 시작 날짜 설정
         tvStartDate.setOnClickListener {
-            showDatePicker(tvStartDate)
-        }
-        // 일정 시작 시간 설정
-        tvStartTime.setOnClickListener {
-            showTimePicker(tvStartTime)
+            showDatePicker(tvStartDate, true)
         }
         // 일정 종료 날짜 설정
         tvEndDate.setOnClickListener {
-            showDatePicker(tvEndDate)
+            showDatePicker(tvEndDate, false)
+        }
+        // 일정 시작 시간 설정
+        tvStartTime.setOnClickListener {
+            showTimePicker(tvStartTime, true)
         }
         // 일정 종료 시간 설정
         tvEndTime.setOnClickListener {
-            showTimePicker(tvEndTime)
+            showTimePicker(tvEndTime, false)
         }
         // 입력하기 버튼
         btnSave.bringToFront() // 저장버튼 앞으로 가져오기
@@ -145,8 +146,9 @@ class EventFragment : Fragment() {
         }
 
     }
+
     //
-    fun showTimePicker(targetTextView: TextView) {
+    fun showTimePicker(targetTextView: TextView, isStartTime: Boolean) {
         val builder = AlertDialog.Builder(requireContext())
         val inflater = requireActivity().layoutInflater
         val dialogView = inflater.inflate(R.layout.activity_time_picker, null)
@@ -161,17 +163,51 @@ class EventFragment : Fragment() {
         cancelButton.setOnClickListener {
             alertDialog.dismiss()
         }
+
         okButton.setOnClickListener {
-            val hour = timePicker.currentHour
-            val minute = timePicker.currentMinute
-            val time = String.format("%02d:%02d", hour, minute)
-            targetTextView.text = time
+            val hour = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                timePicker.hour
+            } else {
+                timePicker.currentHour
+            }
+            val minute = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                timePicker.minute
+            } else {
+                timePicker.currentMinute
+            }
+
+
+            val Day = if (hour >= 12) "오후" else "오전"
+            val justHour = if (hour % 12 == 0) 12 else hour % 12
+            val time = String.format("%s %02d:%02d", Day, justHour, minute)
+
+            if (isStartTime) {
+                startTime = Pair(hour, minute)
+                targetTextView.text = time
+            } else {
+                endTime = Pair(hour, minute)
+
+                // 시작 시간과 종료 시간 비교
+                startTime?.let { start ->
+                    if (endTime!!.first < start.first || (endTime!!.first == start.first && endTime!!.second < start.second)) {
+                        Toast.makeText(
+                            requireContext(),
+                            "종료시간은 시작시간보다 앞설 수 없습니다!!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        targetTextView.text = time
+                    }
+                } ?: run {
+                    targetTextView.text = time
+                }
+            }
             alertDialog.dismiss()
         }
         alertDialog.show()
     }
 
-    fun showDatePicker(targetTextView: TextView) {
+    fun showDatePicker(targetTextView: TextView, isStartDate: Boolean) {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
@@ -188,17 +224,42 @@ class EventFragment : Fragment() {
 
         val alertDialog = builder.create()
 
+        // 시작 날짜 설정 시, 종료 날짜의 최대 날짜 설정
+        if (isStartDate && endDate != null) {
+            datePicker.maxDate = endDate!!.timeInMillis
+        }
+        // 종료 날짜 설정 시, 시작 날짜의 최소 날짜 설정
+        else if (!isStartDate && startDate != null) {
+            datePicker.minDate = startDate!!.timeInMillis
+        }
+
         cancelButton.setOnClickListener {
             alertDialog.dismiss()
         }
 
-        // 꼭 확인할 것! 종료 날짜가 시작 날짜보다 전이면 X !!!!!!!!!!!!!!!!!
         okButton.setOnClickListener {
             val selectedYear = datePicker.year
             val selectedMonth = datePicker.month + 1
             val selectedDay = datePicker.dayOfMonth
             val date = String.format("%04d-%02d-%02d", selectedYear, selectedMonth, selectedDay)
             targetTextView.text = date
+
+            // 선택된 날짜를 전역 변수에 저장
+            if (isStartDate) {
+                startDate = Calendar.getInstance().apply {
+                    set(selectedYear, selectedMonth - 1, selectedDay)
+                }
+                // 종료 날짜의 최소 날짜를 업데이트
+                if (endDate != null) {
+                    tvEndDate.setOnClickListener {
+                        showDatePicker(tvEndDate, false)
+                    }
+                }
+            } else {
+                endDate = Calendar.getInstance().apply {
+                    set(selectedYear, selectedMonth - 1, selectedDay)
+                }
+            }
             alertDialog.dismiss()
         }
         alertDialog.show()
@@ -214,6 +275,7 @@ class EventFragment : Fragment() {
                     Toast.makeText(requireContext(), "편집", Toast.LENGTH_SHORT).show()
                     true
                 }
+
                 R.id.m_delete -> {
                     etTitle.text.clear()
                     tvStartDate.text = ""
@@ -229,6 +291,7 @@ class EventFragment : Fragment() {
                         .commit()
                     true
                 }
+
                 else -> false
             }
         }

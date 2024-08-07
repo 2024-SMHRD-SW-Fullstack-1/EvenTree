@@ -11,7 +11,6 @@
         android:id="@+id/frameLayout"
         android:layout_width="0dp"
         android:layout_height="58dp"
-        android:background="#F27272"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,7 +23,7 @@
                 android:id="@+id/btnClose"
                 android:layout_width="58dp"
                 android:layout_height="0dp"
-                android:background="#F27272"
+                android:backgroundTint="#FDF6FE"
                 android:padding="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -35,13 +34,14 @@
                 android:id="@+id/btnSave"
                 android:layout_width="58dp"
                 android:layout_height="0dp"
-                android:backgroundTint="#F27272"
+                android:backgroundTint="#FDF6FE"
                 android:includeFontPadding="false"
                 android:paddingLeft="0dp"
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
                 android:text="저장"
+                android:textColor="#2B2929"
                 android:textSize="12sp"
                 app:iconPadding="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -52,11 +52,11 @@
                 android:id="@+id/btnMenu"
                 android:layout_width="58dp"
                 android:layout_height="0dp"
-                android:backgroundTint="#F27272"
+                android:backgroundTint="#FDF6FE"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_dialog_dialer" />
+                app:srcCompat="@drawable/baseline_dehaze_24" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -106,7 +106,7 @@
         android:id="@+id/tvStartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
+        android:layout_marginStart="32dp"
         android:hint="00:00"
         app:layout_constraintBottom_toBottomOf="@+id/tvStartDate"
         app:layout_constraintStart_toEndOf="@+id/tvStartDate"
@@ -138,7 +138,7 @@
         android:id="@+id/tvEndTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
+        android:layout_marginStart="32dp"
         android:hint="00:00"
         app:layout_constraintBottom_toBottomOf="@+id/tvEndDate"
         app:layout_constraintStart_toEndOf="@+id/tvEndDate"
@@ -201,12 +201,13 @@
     <TextView
         android:id="@+id/tvMemo"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="220dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LinearLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
