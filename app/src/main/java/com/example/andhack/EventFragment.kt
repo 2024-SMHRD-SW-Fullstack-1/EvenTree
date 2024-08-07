@@ -1,11 +1,7 @@
 package com.example.andhack
 
 import android.app.AlertDialog
-import android.content.Context
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,13 +16,8 @@ import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.andhack.databinding.FragmentCalendarBinding
 import com.example.andhack.databinding.FragmentEventBinding
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import com.prolificinteractive.materialcalendarview.DayViewDecorator
-import com.prolificinteractive.materialcalendarview.DayViewFacade
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import com.prolificinteractive.materialcalendarview.spans.DotSpan
 import java.util.Calendar
 
 class EventFragment : Fragment() {

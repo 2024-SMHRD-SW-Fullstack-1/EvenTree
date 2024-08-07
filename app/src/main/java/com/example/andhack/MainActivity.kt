@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.ImageButton
 import com.example.andhack.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
@@ -68,7 +67,6 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             supportFragmentManager.beginTransaction().replace(mainContent.id, SettingsFragment()).commit()
         }
-
 
         // Initialize and load CalendarFragment
         calendarFragment = CalendarFragment()
