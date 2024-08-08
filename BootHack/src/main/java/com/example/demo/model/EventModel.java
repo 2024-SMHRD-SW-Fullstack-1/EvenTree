@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,29 +11,27 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity // JPA 관리
-@Table(name="member")
+@Table(name="event")
 @Data
-public class MemberModel {
+public class EventModel {
 	
 	@Id //primary key
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가
+	@Column(name="e_idx")
+	private int eIdx;
+	
 	@Column(name="m_idx")
-<<<<<<< HEAD
-	private Long mIdx;
-=======
 	private int mIdx;
->>>>>>> e34ea5f4036e902017a854ae7d2a07109d4daf27
 	
-	@Column(name="m_id", length=30)
-	private String id;
+	@Column(name="start_date")
+	private LocalDateTime startDate;
 	
-	@Column(name="m_pw", length=50)
-	private String pw;
+	@Column(name="end_date")
+	private LocalDateTime endDate;
 	
-	@Column(name="m_email", length=100)
-	private String email;
-<<<<<<< HEAD
-
-=======
->>>>>>> e34ea5f4036e902017a854ae7d2a07109d4daf27
+	@Column(name="title", length=50)
+	private String title;
+	
+	@Column(name="content")
+	private String content;
 }

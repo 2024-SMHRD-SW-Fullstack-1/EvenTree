@@ -1,8 +1,11 @@
 package com.example.andhack
 
 import android.app.AlertDialog
+<<<<<<< HEAD
 import android.media.metrics.Event
 import android.os.Build
+=======
+>>>>>>> e34ea5f4036e902017a854ae7d2a07109d4daf27
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,15 +22,21 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+<<<<<<< HEAD
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+=======
+>>>>>>> e34ea5f4036e902017a854ae7d2a07109d4daf27
 import com.example.andhack.databinding.FragmentEventBinding
 import com.google.gson.Gson
 import com.prolificinteractive.materialcalendarview.CalendarDay
+<<<<<<< HEAD
 import org.json.JSONObject
+=======
+>>>>>>> e34ea5f4036e902017a854ae7d2a07109d4daf27
 import java.util.Calendar
 
 class EventFragment : Fragment() {
