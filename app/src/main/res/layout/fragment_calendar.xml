@@ -18,7 +18,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:mcv_showOtherDates="all" />
+            app:mcv_showOtherDates="all"
+            app:mcv_tileWidth="match_parent"
+            app:mcv_tileHeight="match_parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
