@@ -19,17 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageButton
-                android:id="@+id/btnClose"
-                android:layout_width="58dp"
-                android:layout_height="0dp"
-                android:backgroundTint="#FDF6FE"
-                android:padding="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="58dp"
@@ -42,21 +31,35 @@
                 android:paddingBottom="0dp"
                 android:text="저장"
                 android:textColor="#2B2929"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 app:iconPadding="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/btnMenu"
-                android:layout_width="58dp"
-                android:layout_height="0dp"
+                android:id="@+id/btnClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:backgroundTint="#FDF6FE"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/baseline_dehaze_24" />
+                app:layout_constraintVertical_bias="0.521"
+                app:srcCompat="@drawable/baseline_arrow_back"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <ImageButton
+                android:id="@+id/btnMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="#FDF6FE"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/btnSave"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_menu_24" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -72,7 +75,7 @@
     <EditText
         android:id="@+id/etTitle"
         android:layout_width="265dp"
-        android:layout_height="43dp"
+        android:layout_height="48dp"
         android:layout_marginTop="28dp"
         android:ems="10"
         android:hint="일정 추가"

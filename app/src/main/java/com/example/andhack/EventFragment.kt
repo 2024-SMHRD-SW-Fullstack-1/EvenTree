@@ -1,6 +1,8 @@
 package com.example.andhack
 
 import android.app.AlertDialog
+import android.media.metrics.Event
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,10 +16,18 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.android.volley.AuthFailureError
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.andhack.databinding.FragmentEventBinding
+import com.google.gson.Gson
 import com.prolificinteractive.materialcalendarview.CalendarDay
+import org.json.JSONObject
 import java.util.Calendar
 
 class EventFragment : Fragment() {
@@ -36,6 +46,7 @@ class EventFragment : Fragment() {
     lateinit var etMemo: EditText
     lateinit var btnInput: Button
     lateinit var tvMemo: TextView
+    lateinit var queue: RequestQueue
     var startDate: Calendar? = null
     var endDate: Calendar? = null
     var startTime: Pair<Int, Int>? = null
@@ -49,6 +60,7 @@ class EventFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -64,6 +76,9 @@ class EventFragment : Fragment() {
         btnInput = binding.btnInput
         tvMemo = binding.tvMemo
 
+        // RequestQueue 초기화
+        queue = Volley.newRequestQueue(requireContext())
+
         // 달력에서 선택된 날짜 불러오기
         viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         viewModel.selectedDate.observe(viewLifecycleOwner) { date ->
@@ -72,10 +87,10 @@ class EventFragment : Fragment() {
             tvEndDate.text = formattedDate
 
             startDate = Calendar.getInstance().apply {
-                set(date.year, date.month, date.day)
+                set(date.year, date.month - 1, date.day)
             }
             endDate = Calendar.getInstance().apply {
-                set(date.year, date.month, date.day)
+                set(date.year, date.month - 1, date.day)
             }
 
             tvEndDate.setOnClickListener {
@@ -95,6 +110,14 @@ class EventFragment : Fragment() {
         btnSave.setOnClickListener {
             if (tvMemo.text.isNotEmpty()) {
                 btnSave.visibility = View.INVISIBLE // 메모 작성 후 저장 버튼 사라짐
+                val title = etTitle.text.toString()
+                val content = tvMemo.text.toString()
+                val startDate = "2024-08-08T10:00:00"
+                val endDate = "2024-08-08T12:00:00"
+                val mIdx = 1
+
+                val event = EventVO(mIdx, startDate, endDate, title, content)
+                saveEvent(event)
                 Toast.makeText(requireContext(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "내용을 입력해 주세요.", Toast.LENGTH_SHORT).show()
@@ -148,64 +171,6 @@ class EventFragment : Fragment() {
     }
 
     //
-    fun showTimePicker(targetTextView: TextView, isStartTime: Boolean) {
-        val builder = AlertDialog.Builder(requireContext())
-        val inflater = requireActivity().layoutInflater
-        val dialogView = inflater.inflate(R.layout.activity_time_picker, null)
-        builder.setView(dialogView)
-
-        val timePicker: TimePicker = dialogView.findViewById(R.id.timePicker)
-        val cancelButton: Button = dialogView.findViewById(R.id.btnCancel)
-        val okButton: Button = dialogView.findViewById(R.id.btnOk)
-
-        val alertDialog = builder.create()
-
-        cancelButton.setOnClickListener {
-            alertDialog.dismiss()
-        }
-
-        okButton.setOnClickListener {
-            val hour = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                timePicker.hour
-            } else {
-                timePicker.currentHour
-            }
-            val minute = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                timePicker.minute
-            } else {
-                timePicker.currentMinute
-            }
-
-
-            val Day = if (hour >= 12) "오후" else "오전"
-            val justHour = if (hour % 12 == 0) 12 else hour % 12
-            val time = String.format("%s %02d:%02d", Day, justHour, minute)
-
-            if (isStartTime) {
-                startTime = Pair(hour, minute)
-                targetTextView.text = time
-            } else {
-                endTime = Pair(hour, minute)
-
-                // 시작 시간과 종료 시간 비교
-                startTime?.let { start ->
-                    if (endTime!!.first < start.first || (endTime!!.first == start.first && endTime!!.second < start.second)) {
-                        Toast.makeText(
-                            requireContext(),
-                            "종료시간은 시작시간보다 앞설 수 없습니다!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        targetTextView.text = time
-                    }
-                } ?: run {
-                    targetTextView.text = time
-                }
-            }
-            alertDialog.dismiss()
-        }
-        alertDialog.show()
-    }
 
     fun showDatePicker(targetTextView: TextView, isStartDate: Boolean) {
         val calendar = Calendar.getInstance()
@@ -265,6 +230,69 @@ class EventFragment : Fragment() {
         alertDialog.show()
     }
 
+    fun showTimePicker(targetTextView: TextView, isStartTime: Boolean) {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = requireActivity().layoutInflater
+        val dialogView = inflater.inflate(R.layout.activity_time_picker, null)
+        builder.setView(dialogView)
+
+        val timePicker: TimePicker = dialogView.findViewById(R.id.timePicker)
+        val cancelButton: Button = dialogView.findViewById(R.id.btnCancel)
+        val okButton: Button = dialogView.findViewById(R.id.btnOk)
+
+        val alertDialog = builder.create()
+
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        okButton.setOnClickListener {
+            val hour = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                timePicker.hour
+            } else {
+                timePicker.currentHour
+            }
+            val minute = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                timePicker.minute
+            } else {
+                timePicker.currentMinute
+            }
+
+
+            val Day = if (hour >= 12) "오후" else "오전"
+            val justHour = if (hour % 12 == 0) 12 else hour % 12
+            val time = String.format("%s %02d:%02d", Day, justHour, minute)
+
+            if (isStartTime) {
+                startTime = Pair(hour, minute)
+                targetTextView.text = time
+            } else {
+                endTime = Pair(hour, minute)
+
+                // 시작 시간과 종료 시간 비교
+                startTime?.let { start ->
+                    if (startDate != null && endDate != null && startDate!!.timeInMillis == endDate!!.timeInMillis) {
+                        if (endTime!!.first < start.first || (endTime!!.first == start.first && endTime!!.second < start.second)) {
+                            Toast.makeText(
+                                requireContext(),
+                                "종료 시간은 시작 시간보다 앞설 수 없습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            targetTextView.text = time
+                        }
+                    } else {
+                        targetTextView.text = time
+                    }
+                } ?: run {
+                    targetTextView.text = time
+                }
+            }
+            alertDialog.dismiss()
+        }
+        alertDialog.show()
+    }
+
     fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(requireContext(), view)
         popupMenu.menuInflater.inflate(R.menu.event_detail_nav_option, popupMenu.menu)
@@ -272,7 +300,7 @@ class EventFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.m_edit -> {
                     btnSave.visibility = View.VISIBLE // 입력 후 저장버튼 보이기
-                    Toast.makeText(requireContext(), "편집", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "수정하기", Toast.LENGTH_SHORT).show()
                     true
                 }
 
@@ -296,5 +324,41 @@ class EventFragment : Fragment() {
             }
         }
         popupMenu.show()
+    }
+
+    fun saveEvent(eventVO: EventVO){
+        val url = "http://192.168.219.56:8089/IZG/event" //서버 주소
+        val jsonRequest = JSONObject(Gson().toJson(eventVO))
+
+        val request = object : StringRequest(
+            Request.Method.POST,
+            url,
+            {response ->
+                Log.d("res!", response)
+                println("Res: $response")
+                Toast.makeText(requireContext(), "저장되었습니다1.", Toast.LENGTH_SHORT).show()
+                btnSave.visibility = View.INVISIBLE //메모 작성 후 저장버튼 사라짐
+            },
+            {error ->
+                Log.d("Err" , error.toString())
+                Toast.makeText(requireContext(), "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+            override fun getBody(): ByteArray {
+                return jsonRequest.toString().toByteArray(Charsets.UTF_8)
+            }
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Content-Type"] = "application/json"
+                headers["Authorization"] = "Bearer your_auth_token" // 필요시 인증 토큰 추가
+                return headers
+            }
+        }
+        queue.add(request)
+
     }
 }

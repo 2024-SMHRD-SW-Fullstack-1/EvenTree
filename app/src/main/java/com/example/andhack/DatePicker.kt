@@ -1,8 +1,7 @@
-package com.example.calendarproject
+package com.example.andhack
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.andhack.R
 
 class DatePicker : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
