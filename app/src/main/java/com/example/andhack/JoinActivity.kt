@@ -67,7 +67,7 @@ class JoinActivity : AppCompatActivity() {
 
                 val request = object :StringRequest(
                     Request.Method.POST,
-                    "http://121.148.127.125:8089/IZG/join",
+                    "http://192.168.219.51:8089/IZG/join",
                     {
                             response ->
                         val intent = Intent(this,LoginActivity::class.java)
@@ -90,7 +90,13 @@ class JoinActivity : AppCompatActivity() {
                 }
                 queue.add(request)
             }else{
-                Toast.makeText(this,"비어있으면 안됩니다용",Toast.LENGTH_SHORT).show()
+                if(joinPw != joinPwValidate) {
+                    Toast.makeText(this,"입력한 비밀번호 확인해주세요.",Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this,"비어있으면 안됩니다용",Toast.LENGTH_SHORT).show()
+                }
+
+
             }
         }
 

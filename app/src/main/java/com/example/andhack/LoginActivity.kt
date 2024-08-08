@@ -58,7 +58,6 @@ class LoginActivity : AppCompatActivity() {
             val loginId = etLoginId.text.toString()
             val loginPw = etLoginPw.text.toString()
 
-
             val mv = MemberVO(loginId, loginPw, null,null)
             val jsonRequest = JSONObject(Gson().toJson(mv))
 
@@ -78,7 +77,7 @@ class LoginActivity : AppCompatActivity() {
                         //JWT 토큰을 SharedPreferences에 저장
                         ShaeredPrefManager.saveToken(this, response)
 
-                        val intent = Intent(this, StartActivity::class.java)
+                        val intent = Intent(this, MainActivity::class.java)
                         println("Login successful")
                         finishAffinity()
                         startActivity(intent)
