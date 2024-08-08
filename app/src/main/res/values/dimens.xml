@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="nav_icon_size">58dp</dimen>
-    <dimen name="nav_icon_margin_top">6dp</dimen>
-    <dimen name="nav_title_margin_bottom">10dp</dimen>
-
-</resources>
