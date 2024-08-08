@@ -16,7 +16,6 @@ public class MemberService {
 		memberRepository.save(mv);
 	}
 
-
 	// 로그인
     public MemberModel findByIdAndPw(String id, String pw) {
         return memberRepository.findByIdAndPw(id, pw);

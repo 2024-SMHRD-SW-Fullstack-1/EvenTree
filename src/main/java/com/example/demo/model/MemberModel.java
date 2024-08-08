@@ -16,22 +16,15 @@ public class MemberModel {
 	@Id //primary key
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가
 	@Column(name="m_idx")
-<<<<<<< HEAD
-	private Long mIdx;
-=======
 	private int mIdx;
->>>>>>> e34ea5f4036e902017a854ae7d2a07109d4daf27
 	
-	@Column(name="m_id", length=30)
+	@Column(name="m_id", length=30, nullable=false, unique=true)
 	private String id;
 	
-	@Column(name="m_pw", length=50)
+	@Column(name="m_pw", length=50, nullable=false)
 	private String pw;
 	
-	@Column(name="m_email", length=100)
-	private String email;
-<<<<<<< HEAD
+	@Column(name="m_nick", length=50, nullable=false)
+	private String nick;
 
-=======
->>>>>>> e34ea5f4036e902017a854ae7d2a07109d4daf27
 }

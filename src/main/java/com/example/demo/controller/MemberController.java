@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.jwt.JwtTokenProvider;
 import com.example.demo.model.MemberModel;
 import com.example.demo.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +16,9 @@ public class MemberController {
 
 	@Autowired
 	private MemberService memberService;
+	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 
 	// 회원가입
 	@PostMapping("/join")
@@ -26,14 +30,17 @@ public class MemberController {
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestBody MemberModel mv) {
+	public String login(@RequestBody MemberModel mv, String password) {
 		MemberModel member = memberService.findByIdAndPw(mv.getId(), mv.getPw());
 		
-		if (member != null) {
-			System.out.println(member);
-			return "success";
+		
+		if (member != null && member.getPw().equals(mv.getPw())) {
+			String token = jwtTokenProvider.createToken(member.getId(), member.getMIdx());
+			System.out.println(token);
+			return token;
 		} else {
-			return "Login failed";
+			System.out.println("실패");
+			return "fail";
 		}
 	}
 }
