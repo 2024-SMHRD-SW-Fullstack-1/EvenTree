@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -26,6 +27,7 @@ class JoinActivity : AppCompatActivity() {
         queue= Volley.newRequestQueue(this@JoinActivity)
 
         buttonjoin.setOnClickListener {
+            Toast.makeText(this, "가입클릭", Toast.LENGTH_SHORT).show()
 
             val joinId = etJoinId.text.toString()
             val joinPw = etJoinPw.text.toString()
@@ -35,7 +37,7 @@ class JoinActivity : AppCompatActivity() {
 
             val request = object :StringRequest(
                 Request.Method.POST,
-                "http://192.168.219.51:8089/IZG/join",
+                "http://192.168.219.56:8089/IZG/join",
                 {
                         response ->
                     Intent(this, StartActivity::class.java)
