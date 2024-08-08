@@ -1,0 +1,27 @@
+<resources>
+    <!-- 텍스트 스타일 정의 -->
+    <style name="BottomNavigationActiveText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">14sp</item> <!-- 텍스트 크기 조정 -->
+        <item name="android:textColor">?attr/colorOnPrimary</item> <!-- 활성화된 텍스트 색상 -->
+    </style>
+
+    <style name="BottomNavigationInactiveText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">14sp</item> <!-- 텍스트 크기 조정 -->
+        <item name="android:textColor">?attr/colorOnSurface</item> <!-- 비활성화된 텍스트 색상 -->
+    </style>
+
+    <!-- BottomNavigationView 스타일 정의 -->
+    <style name="BottomNavigationViewStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemIconSize">24dp</item> <!-- 아이콘 크기 조정 -->
+        <item name="itemTextAppearanceActive">@style/BottomNavigationActiveText</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavigationInactiveText</item>
+    </style>
+
+    <style name="CustomDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+</resources>
