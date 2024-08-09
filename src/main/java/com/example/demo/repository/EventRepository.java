@@ -13,5 +13,5 @@ import com.example.demo.model.EventModel;
 
 @Repository
 public interface EventRepository extends JpaRepository<EventModel, Integer> {
-	List<EventModel> findByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDateTime dateTime, LocalDateTime dateTime2);
+	List<EventModel> findByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDateTime endOfDay, LocalDateTime startOfDay);
 }

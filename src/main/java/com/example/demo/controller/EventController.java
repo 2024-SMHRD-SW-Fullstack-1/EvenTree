@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -69,5 +70,11 @@ public class EventController {
         }
 
         return events;
+    }
+	
+	@GetMapping("/get-all-events")
+    public List<EventModel> getAllEvents() {
+		System.out.println("sent all events : " + eventService.getAllEvents());
+        return eventService.getAllEvents();
     }
 }

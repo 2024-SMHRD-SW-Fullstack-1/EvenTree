@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,19 @@ public class EventService {
 		eventRepository.save(ev);
 	}
 	
-	// 일정 찾기
+	// 선택된 하루의 일정 찾기
 	public List<EventModel> getEventsByDate(String date) {
         LocalDate localDate = LocalDate.parse(date);
-        LocalDateTime dateTime = localDate.atStartOfDay(); // 주어진 날짜의 00:00:00
-        System.out.println("parsed dateTime : " + dateTime.toString());
+        LocalDateTime startOfDay = localDate.atStartOfDay(); // 날짜 00:00:00
+        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX); // 날짜 23:59:59
+        System.out.println("parsed startOfDay : " + startOfDay.toString());
+        System.out.println("parsed endOfDay : " + endOfDay.toString());
 
-        return eventRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(dateTime, dateTime);
+        return eventRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(endOfDay, startOfDay);
+    }
+	
+	// 일정 모두 찾기
+	public List<EventModel> getAllEvents() {
+        return eventRepository.findAll();
     }
 }
