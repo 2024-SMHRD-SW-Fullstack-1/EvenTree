@@ -12,5 +12,5 @@ public interface MemberRepository extends JpaRepository<MemberModel,Integer> {
 	
 	MemberModel findByIdAndPw(String id, String pw);
 	Optional<MemberModel> findById(String id); // 회원정보 조회
-	
+	void deleteById(String id); // 회원 삭제
 }

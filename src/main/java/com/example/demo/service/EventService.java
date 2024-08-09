@@ -40,20 +40,28 @@ public class EventService {
         }
     }
 	
-	// 선택된 하루의 일정 찾기
-	public List<EventModel> getEventsByDate(String date) {
+	// 선택된 하루의 일정 찾기 (멤버 조건없이 모두 조회)
+//	public List<EventModel> getEventsByDate(String date) {
+//        LocalDate localDate = LocalDate.parse(date);
+//        LocalDateTime startOfDay = localDate.atStartOfDay(); // 날짜 00:00:00
+//        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX); // 날짜 23:59:59
+//        System.out.println("parsed startOfDay : " + startOfDay.toString());
+//        System.out.println("parsed endOfDay : " + endOfDay.toString());
+//
+//        return eventRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(endOfDay, startOfDay);
+//    }
+	// 선택된 날짜의 일정 조회 (멤버 조건으로 조회)
+	public List<EventModel> getEventsByDate(String date, int mIdx) {
         LocalDate localDate = LocalDate.parse(date);
         LocalDateTime startOfDay = localDate.atStartOfDay(); // 날짜 00:00:00
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX); // 날짜 23:59:59
-        System.out.println("parsed startOfDay : " + startOfDay.toString());
-        System.out.println("parsed endOfDay : " + endOfDay.toString());
-
-        return eventRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(endOfDay, startOfDay);
+        
+        return eventRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqualAndMIdx(endOfDay, startOfDay, mIdx);
     }
-	
+		
 	// 일정 모두 찾기
-	public List<EventModel> getAllEvents() {
-        return eventRepository.findAll();
+	public List<EventModel> getAllEvents(int mIdx) {
+        return eventRepository.findByMIdx(mIdx);
     }
 	
 	@Transactional

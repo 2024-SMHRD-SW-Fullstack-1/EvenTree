@@ -1,9 +1,5 @@
 package com.example.demo.controller;
 
-import java.net.http.HttpHeaders;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -13,17 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.jwt.JwtTokenProvider;
 import com.example.demo.model.EventModel;
-import com.example.demo.model.MemberModel;
-import com.example.demo.repository.EventRepository;
 import com.example.demo.service.EventService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class EventController {
@@ -69,10 +59,17 @@ public class EventController {
 		
 	// 일정 찾기
 	@PostMapping("/get-events")
-	public List<EventModel> getEventsByDate(@RequestBody Map<String, String> request) {
+	public List<EventModel> getEventsByDate(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
         String date = request.get("date");
         System.out.println("received date : " + date);
-        List<EventModel> events = eventService.getEventsByDate(date);
+        
+        if (token.startsWith("Bearer ")) {
+	        token = token.substring(7);
+	    }
+
+	    int mIdx = jwtTokenProvider.getMIdx(token);
+        
+        List<EventModel> events = eventService.getEventsByDate(date, mIdx);
         
         // 일정 출력
         for (EventModel event : events) {
@@ -90,9 +87,16 @@ public class EventController {
     }
 	
 	@GetMapping("/get-all-events")
-    public List<EventModel> getAllEvents() {
-		System.out.println("sent all events : " + eventService.getAllEvents());
-        return eventService.getAllEvents();
+    public List<EventModel> getAllEvents(@RequestHeader("Authorization") String token) {
+		if (token.startsWith("Bearer ")) {
+	        token = token.substring(7);
+	    }
+	  
+	    int mIdx = jwtTokenProvider.getMIdx(token);
+		
+	    System.out.println("sent all events : " + eventService.getAllEvents(mIdx));
+		
+        return eventService.getAllEvents(mIdx);
     }
 
 	@PostMapping("/delete-event")
