@@ -76,6 +76,7 @@
 
     </RelativeLayout>
 
+<<<<<<< HEAD
 <!--    <Button-->
 <!--        android:id="@+id/btnLogin3"-->
 <!--        android:layout_width="230dp"-->
@@ -126,6 +127,58 @@
 <!--        app:layout_constraintEnd_toEndOf="parent"-->
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/btnLogin2" />-->
+=======
+    <!--    <Button-->
+    <!--        android:id="@+id/btnLogin3"-->
+    <!--        android:layout_width="230dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="24dp"-->
+    <!--        android:backgroundTint="#03C75A"-->
+    <!--        android:text="네이버 로그인"-->
+    <!--        app:cornerRadius="10dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/textView4"-->
+    <!--        app:layout_constraintHorizontal_bias="0.505"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/textView4"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/textView4" />-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/btnLogin5"-->
+    <!--        android:layout_width="230dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="4dp"-->
+    <!--        android:backgroundTint="#1877F2"-->
+    <!--        android:text="페이스북 로그인"-->
+    <!--        app:cornerRadius="10dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/btnLogin4"-->
+    <!--        app:layout_constraintHorizontal_bias="0.0"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/btnLogin4"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/btnLogin4" />-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/btnLogin4"-->
+    <!--        android:layout_width="230dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="4dp"-->
+    <!--        android:backgroundTint="#FFCD00"-->
+    <!--        android:text="카카오 로그인"-->
+    <!--        android:textColor="#000000"-->
+    <!--        app:cornerRadius="10dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/btnLogin3"-->
+    <!--        app:layout_constraintHorizontal_bias="0.0"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/btnLogin3"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/btnLogin3" />-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/textView4"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="24dp"-->
+    <!--        android:text="&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;간편 로그인-&#45;&#45;&#45;&#45;&#45;&#45;"-->
+    <!--        android:textColor="#cecece"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/btnLogin2" />-->
+>>>>>>> jand-working
 
     <TextView
         android:id="@+id/textView2"

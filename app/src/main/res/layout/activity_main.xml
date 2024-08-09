@@ -32,6 +32,7 @@
             android:layout_gravity="start" />
 
         <LinearLayout
+<<<<<<< HEAD
             android:layout_width="match_parent"
             android:layout_height="58dp"
             android:orientation="vertical">
@@ -55,6 +56,26 @@
                     android:background="#F27272"
                     android:text="TextView" />
             </LinearLayout>
+=======
+            android:id="@+id/topbar"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnSidebar"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                app:srcCompat="@drawable/gucci_cat" />
+
+            <TextView
+                android:id="@+id/tvGroupName"
+                android:layout_width="wrap_content"
+                android:layout_height="58dp"
+                android:layout_weight="1"
+                android:background="#F27272"
+                android:text="TextView" />
+>>>>>>> jand-working
 
         </LinearLayout>
 

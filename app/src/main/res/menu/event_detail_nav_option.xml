@@ -4,7 +4,10 @@
     <item
         android:id="@+id/m_edit"
         android:title="수정" />
+<<<<<<< HEAD
 
+=======
+>>>>>>> jand-working
     <item
         android:id="@+id/m_delete"
         android:title="삭제" />

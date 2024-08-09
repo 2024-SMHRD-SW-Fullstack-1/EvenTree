@@ -17,6 +17,10 @@ import com.google.gson.Gson
 import org.json.JSONObject
 import android.text.method.PasswordTransformationMethod
 import android.widget.TextView
+<<<<<<< HEAD
+=======
+import com.example.andhack.SharedPrefManager
+>>>>>>> jand-working
 
 class LoginActivity : AppCompatActivity() {
 
@@ -63,19 +67,31 @@ class LoginActivity : AppCompatActivity() {
 
             val request = object: StringRequest(
                 Request.Method.POST,
+<<<<<<< HEAD
                 "http://192.168.219.51:8089/IZG/login",
+=======
+                "http://39.114.154.29:8089/IZG/login",
+>>>>>>> jand-working
                 {response ->
                     println("Response: $response")
 
                     //JWT 토큰을 SharedPreferences에 저장
+<<<<<<< HEAD
                     val token = ShaeredPrefManager.saveToken(this, response)
+=======
+                    val token = SharedPrefManager.saveToken(this, response)
+>>>>>>> jand-working
                     Log.d("token",token.toString())
                     if(response == "fail"){
                         println("Login failed")
                         Toast.makeText(this,"비밀번호를 확인해보세요",Toast.LENGTH_SHORT).show()
                     }else{
                         //JWT 토큰을 SharedPreferences에 저장
+<<<<<<< HEAD
                         ShaeredPrefManager.saveToken(this, response)
+=======
+                        SharedPrefManager.saveToken(this, response)
+>>>>>>> jand-working
 
                         val intent = Intent(this, MainActivity::class.java)
                         println("Login successful")

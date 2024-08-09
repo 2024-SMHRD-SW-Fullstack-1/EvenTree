@@ -8,5 +8,9 @@
     <!-- 불일치 메시지 -->
     <string name="password_mismatch">불일치</string>
     <!-- 기본 텍스트 색상 -->
+<<<<<<< HEAD
     <string name="password_empty"/>
+=======
+    <string name="password_empty" />
+>>>>>>> jand-working
 </resources>

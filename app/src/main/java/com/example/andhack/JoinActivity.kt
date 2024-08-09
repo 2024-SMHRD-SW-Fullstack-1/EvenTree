@@ -67,7 +67,11 @@ class JoinActivity : AppCompatActivity() {
 
                 val request = object :StringRequest(
                     Request.Method.POST,
+<<<<<<< HEAD
                     "http://192.168.219.51:8089/IZG/join",
+=======
+                    "http://192.168.219.63:8089/IZG/join",
+>>>>>>> jand-working
                     {
                             response ->
                         val intent = Intent(this,LoginActivity::class.java)
@@ -99,8 +103,11 @@ class JoinActivity : AppCompatActivity() {
 
             }
         }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> jand-working
     }
     private fun validatePasswords() {
         val joinPw = etJoinPw.text.toString()

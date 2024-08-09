@@ -5,6 +5,11 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
+<<<<<<< HEAD
+=======
+import android.widget.LinearLayout
+import android.widget.Toolbar
+>>>>>>> jand-working
 import com.example.andhack.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -94,6 +99,16 @@ class MainActivity : AppCompatActivity() {
         }
             true
         }
+<<<<<<< HEAD
+=======
+
+        // 일정 리스트 화면에서 일정 추가 버튼을 누르면
+        // 메인액티비티를 거쳐 일정 추가 프래그먼트로 이동
+        // Intent로 전달된 데이터 확인
+//        val fragmentToOpen = intent.getStringExtra("fragment_to_open")
+//        Log.d("fragmentToOpen", fragmentToOpen.toString())
+//        moveToEventFragment(fragmentToOpen)
+>>>>>>> jand-working
     }
 
     private fun toggleGroupItems() {
@@ -102,4 +117,18 @@ class MainActivity : AppCompatActivity() {
         navItem2.visibility = if (isGroupExpanded) View.VISIBLE else View.GONE
         navGroup.text = if (isGroupExpanded) "그룹 (축소)" else "그룹 (확장)"
     }
+<<<<<<< HEAD
+=======
+
+    private fun moveToEventFragment(fragment: String?) {
+        // Fragment를 추가하거나 교체
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+
+        if (fragment == "EventFragment") {
+            fragmentTransaction.replace(R.id.mainContent, EventFragment())
+        }
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+    }
+>>>>>>> jand-working
 }

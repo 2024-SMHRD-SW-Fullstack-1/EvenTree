@@ -2,23 +2,50 @@ package com.example.andhack
 
 import android.content.Context
 import android.content.Intent
+<<<<<<< HEAD
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.text.style.ForegroundColorSpan
+=======
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.os.Build
+import android.os.Bundle
+import android.text.style.ForegroundColorSpan
+import android.text.style.LineBackgroundSpan
+>>>>>>> jand-working
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+<<<<<<< HEAD
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.andhack.databinding.FragmentCalendarBinding
+=======
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.example.andhack.databinding.FragmentCalendarBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+>>>>>>> jand-working
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+<<<<<<< HEAD
 import com.prolificinteractive.materialcalendarview.format.ArrayWeekDayFormatter
 import com.prolificinteractive.materialcalendarview.format.MonthArrayTitleFormatter
 import com.prolificinteractive.materialcalendarview.spans.DotSpan
@@ -26,6 +53,12 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+=======
+import com.prolificinteractive.materialcalendarview.spans.DotSpan
+import org.json.JSONArray
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+>>>>>>> jand-working
 import java.util.Calendar
 
 class CalendarFragment : Fragment() {
@@ -34,6 +67,10 @@ class CalendarFragment : Fragment() {
     private val events = mutableListOf<CalendarDay>()
     private var selectedDate: CalendarDay? = null
     private lateinit var viewModel: SharedViewModel
+<<<<<<< HEAD
+=======
+    lateinit var queue: RequestQueue
+>>>>>>> jand-working
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,10 +87,23 @@ class CalendarFragment : Fragment() {
         // 캘린더
         calendar = binding.calendarView
 
+<<<<<<< HEAD
         // 색칠할 날짜를 calendarDayList에 추가
         events.add(CalendarDay.from(2022, 5, 25))
         events.add(CalendarDay.from(2022, 5, 24))
         events.add(CalendarDay.from(2022, 5, 23))
+=======
+        // RequestQueue 초기화
+        queue = Volley.newRequestQueue(requireContext())
+
+        // DB에서 일정 가져오기
+        fetchEvents()
+
+        // 색칠할 날짜를 calendarDayList에 추가
+        // events.add(CalendarDay.from(2022, 5, 25))
+        // events.add(CalendarDay.from(2022, 5, 24))
+        // events.add(CalendarDay.from(2022, 5, 23))
+>>>>>>> jand-working
 
         // 오늘 날짜 선택
         calendar.setSelectedDate(CalendarDay.today())
@@ -65,6 +115,7 @@ class CalendarFragment : Fragment() {
         val saturdayDecorator = SaturdayDecorator()
         val sundayDecorator = SundayDecorator()
         val selectedDecorator = SelectedDecorator(requireContext())
+<<<<<<< HEAD
         // val eventDecorator = EventDecorator()
         // val minMaxDecorator = MinMaxDecorator()
 
@@ -74,17 +125,35 @@ class CalendarFragment : Fragment() {
             saturdayDecorator,
             sundayDecorator,
             selectedDecorator
+=======
+        // val minMaxDecorator = MinMaxDecorator()
+
+        // Add Decorator
+        calendar.addDecorators(
+            todayDecorator,
+            saturdayDecorator,
+            sundayDecorator,
+            selectedDecorator,
+>>>>>>> jand-working
         )
 
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         // 달력 화면 접속 시 ViewModel에 있는 선택된 날짜 데이터를 불러오기
+<<<<<<< HEAD
         viewModel.selectedDate.observe(viewLifecycleOwner, { date ->
+=======
+        viewModel.selectedDate.observe(viewLifecycleOwner) { date ->
+>>>>>>> jand-working
             selectedDate = date
             Log.d("CalFragment entered", date.toString())
             selectedDecorator.setDate(selectedDate)
             binding.calendarView.invalidateDecorators() // 데코레이터 새로고침
+<<<<<<< HEAD
         })
+=======
+        }
+>>>>>>> jand-working
 
         // 날짜 선택 시
         // ViewModel에 날짜 설정
@@ -208,6 +277,7 @@ class CalendarFragment : Fragment() {
         }
     }
 
+<<<<<<< HEAD
     // 일정이 있는 날짜에 표시
     inner class EventDecorator(private val dates: Collection<CalendarDay>) : DayViewDecorator {
 
@@ -229,5 +299,132 @@ class CalendarFragment : Fragment() {
 
         // LocalDate로 변환
         return LocalDate.of(year, month, day)
+=======
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun eventDecorator(context: Context, eventList: List<EventVO>): DayViewDecorator {
+        return object : DayViewDecorator {
+            private val eventDates = HashSet<CalendarDay>()
+
+            init {
+                // 스케줄 목록에서 이벤트가 있는 날짜를 파싱하여 이벤트 날짜 목록에 추가한다.
+                eventList.forEach { event ->
+                    try {
+                        // 날짜와 시간 정보를 포함한 문자열을 LocalDate로 변환
+                        val startDate = event.startDate.substringBefore('T')
+                        val endDate = event.endDate.substringBefore('T')
+                        // 예시. 2024-08-08
+                        Log.d("parsed startDate", startDate)
+                        Log.d("parsed endDate", endDate)
+
+                        // LocalDate로 변환
+                        // 예시. 2024-08-08
+                        val startLocalDate = LocalDate.parse(startDate)
+                        val endLocalDate = LocalDate.parse(endDate)
+                        Log.d("parsed startLocalDate", startLocalDate.toString())
+                        Log.d("parsed endLocalDate", endLocalDate.toString())
+
+                        // 날짜 범위 사이의 모든 날짜를 생성
+                        val datesInRange = getDateRange(startLocalDate, endLocalDate)
+                        eventDates.addAll(datesInRange)
+                    } catch (e: Exception) {
+                        Log.e("EventDecorator", "Invalid date format for event: ${event.startDate} - ${event.endDate}")
+                    }
+                }
+            }
+
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return eventDates.contains(day)
+            }
+
+            override fun decorate(view: DayViewFacade) {
+                // 이벤트가 있는 날짜에 점을 추가하여 표시한다.
+                view.addSpan(DotSpan(10F, ContextCompat.getColor(context, R.color.primary_color)))
+            }
+
+            /**
+             * 시작 날짜와 종료 날짜 사이의 모든 날짜를 가져오는 함수
+             * @param startDate 시작 날짜
+             * @param endDate 종료 날짜
+             * @return 날짜 범위 목록
+             */
+            @RequiresApi(Build.VERSION_CODES.O)
+            private fun getDateRange(startDate: LocalDate, endDate: LocalDate): List<CalendarDay> {
+                val datesInRange = mutableListOf<CalendarDay>()
+                var currentDate = startDate
+                while (!currentDate.isAfter(endDate)) {
+                    datesInRange.add(
+                        CalendarDay.from(
+                            currentDate.year,
+                            currentDate.monthValue,
+                            currentDate.dayOfMonth
+                        )
+                    )
+                    currentDate = currentDate.plusDays(1)
+                }
+                return datesInRange
+            }
+        }
+    }
+
+    private fun fetchEvents() {
+        Log.d("fetch ee", "fetch")
+
+        val url = "http://39.114.154.29:8089/IZG/get-all-events"
+
+        val request = @RequiresApi(Build.VERSION_CODES.O)
+        object : StringRequest(
+            Request.Method.GET,
+            url,
+            Response.Listener<String> { response ->
+                Log.d("all events response", response.toString())
+                try {
+                    // JSON 배열을 파싱하여 리스트로 변환
+                    val jsonArray = JSONArray(response)
+                    val gson = Gson()
+                    val type = object : TypeToken<List<EventVO>>() {}.type
+                    val eventList: List<EventVO> = gson.fromJson(jsonArray.toString(), type)
+                    // 이벤트를 처리하는 로직
+                    Log.d("Parsed Events", eventList.toString())
+                    // 기존의 이벤트 데코레이터를 제거
+                    calendar.removeDecorators()
+                    // 데코레이터 생성 및 추가
+                    val todayDecorator = ToDayDecorator(requireContext())
+                    val saturdayDecorator = SaturdayDecorator()
+                    val sundayDecorator = SundayDecorator()
+                    val selectedDecorator = SelectedDecorator(requireContext())
+                    val eventDecorator = eventDecorator(requireContext(), eventList)
+                    // Add Decorator
+                    calendar.addDecorators(
+                        todayDecorator,
+                        saturdayDecorator,
+                        sundayDecorator,
+                        selectedDecorator,
+                        eventDecorator
+                    )
+                    binding.calendarView.invalidateDecorators() // 데코레이터 새로고침
+                } catch (e: Exception) {
+                    Log.e("Parsing Error", "Failed to parse events: ${e.message}")
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e("Volley", "Error fetching events: ${error.message}")
+            }
+        ) {
+            // GET 요청에는 바디가 필요 없으므로 getBodyContentType을 오버라이드할 필요 없음
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+        }
+
+        // RequestQueue에 요청 추가
+        queue.add(request)
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        super.onResume()
+
+        // DB에서 일정 가져오기
+        fetchEvents()
+>>>>>>> jand-working
     }
 }

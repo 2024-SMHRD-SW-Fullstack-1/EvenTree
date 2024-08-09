@@ -3,4 +3,8 @@
     <dimen name="nav_icon_size">58dp</dimen>
     <dimen name="nav_icon_margin_top">6dp</dimen>
     <dimen name="nav_title_margin_bottom">10dp</dimen>
+<<<<<<< HEAD
+=======
+
+>>>>>>> jand-working
 </resources>

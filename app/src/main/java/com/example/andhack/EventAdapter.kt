@@ -11,7 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+<<<<<<< HEAD
 class EventAdapter(val context: Context, val eventList: ArrayList<EventVO>): RecyclerView.Adapter<EventAdapter.ViewHolder>() {
+=======
+class EventAdapter(val context: Context, val eventList: ArrayList<EventVO>, private val onItemClick: (EventVO) -> Unit): RecyclerView.Adapter<EventAdapter.ViewHolder>() {
+>>>>>>> jand-working
 
     // View Holder : weatherList 개별 데이터에 뷰에 대응
     // itemView는 weather_item.xml이 객체화된 것
@@ -23,6 +27,19 @@ class EventAdapter(val context: Context, val eventList: ArrayList<EventVO>): Rec
         init {
             tvTime = itemView.findViewById(R.id.tvTime)
             tvTitle = itemView.findViewById(R.id.tvTitle)
+<<<<<<< HEAD
+=======
+            // 클릭 리스너 설정
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    // 클릭된 아이템의 데이터 가져오기
+                    val event = eventList[position]
+                    // 클릭 리스너 호출
+                    onItemClick(event)
+                }
+            }
+>>>>>>> jand-working
         }
     }
 

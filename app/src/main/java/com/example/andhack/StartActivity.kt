@@ -13,7 +13,11 @@ class StartActivity : AppCompatActivity() {
 
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val btnJoin = findViewById<Button>(R.id.btnJoin)
+<<<<<<< HEAD
         val token = ShaeredPrefManager.getToken(this)
+=======
+        val token = SharedPrefManager.getToken(this)
+>>>>>>> jand-working
 
         btnLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
