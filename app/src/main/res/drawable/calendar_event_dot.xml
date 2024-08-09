@@ -1,5 +1,0 @@
-<!-- res/drawable/calendar_event_dot.xml -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#FF0000"/> <!-- 점의 색상 -->
-    <size android:width="8dp" android:height="8dp"/> <!-- 점의 크기 -->
-</shape>

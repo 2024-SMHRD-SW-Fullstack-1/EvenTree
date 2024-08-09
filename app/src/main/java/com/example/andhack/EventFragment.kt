@@ -319,10 +319,6 @@ class EventFragment : Fragment() {
 
                     eIdx?.let { deleteEvent(it) }
 
-                    // 삭제 후, 캘린더로 이동
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .replace(R.id.mainContent, CalendarFragment())
-                        .commit()
                     true
                 }
 
@@ -334,7 +330,7 @@ class EventFragment : Fragment() {
 
     fun saveEvent(eventVO: EventVO){
         val token = SharedPrefManager.getToken(requireContext())
-        val url = "http://39.114.154.29:8089/IZG/add-event" //서버 주소
+        val url = "http://192.168.219.63:8089/IZG/add-event" //서버 주소
 
         // JSON 객체 생성
         val jsonObject = JSONObject().apply {
@@ -380,7 +376,7 @@ class EventFragment : Fragment() {
 
     fun updateEvent(eventVO: EventVO) {
         val token = SharedPrefManager.getToken(requireContext())
-        val url = "http://39.114.154.29:8089/IZG/update-event" // 서버 주소
+        val url = "http://192.168.219.63:8089/IZG/update-event" // 서버 주소
 
         // JSON 객체 생성
         val jsonObject = JSONObject().apply {
@@ -432,7 +428,7 @@ class EventFragment : Fragment() {
 
     fun deleteEvent(eIdx: Int){
         val token = SharedPrefManager.getToken(requireContext())
-        val url = "http://39.114.154.29:8089/IZG/delete-event"
+        val url = "http://192.168.219.63:8089/IZG/delete-event"
 
         // eIdx를 JSON 객체로 변환
         val jsonRequest = JSONObject()
@@ -444,6 +440,10 @@ class EventFragment : Fragment() {
             url,
             { response ->
                 Log.d("delete response", response)
+                // 삭제 후, 캘린더로 이동
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.mainContent, CalendarFragment())
+                    .commit()
             },
             { error ->
                 Log.d("error", error.toString())

@@ -1,12 +1,16 @@
 package com.example.andhack
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toolbar
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.andhack.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -26,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var navSettings: Button
     private var isGroupExpanded = false
 
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -33,6 +39,14 @@ class MainActivity : AppCompatActivity() {
 
         val mainContent = binding.mainContent
         val bnv = binding.bnv
+        val token = SharedPrefManager.getToken(this)
+        Log.d("token", token.toString())
+
+        // 그룹이름으로 해야하지만 임시방편...
+        val tvGroupName = binding.root.findViewById<TextView>(R.id.tvGroupName)
+        if(token != null){
+            tvGroupName.setText("EvenTree")
+        }
 
         // Access and initialize sidebar buttons
         drawerLayout = binding.drawerLayout
@@ -83,6 +97,11 @@ class MainActivity : AppCompatActivity() {
                     .replace(mainContent.id, CalendarFragment())
                     .commit()
             }
+            R.id.nav_group -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(mainContent.id, GroupListFragment())
+                    .commit()
+            }
             R.id.nav_event -> {
                 supportFragmentManager.beginTransaction()
                     .replace(mainContent.id, EventFragment())
@@ -96,13 +115,28 @@ class MainActivity : AppCompatActivity() {
         }
             true
         }
+        // Initialize ActivityResultLauncher
+        activityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val newNick = result.data?.getStringExtra("newNick")
+                updateFragmentNickname(newNick ?: "")
+            }
+        }
 
-        // 일정 리스트 화면에서 일정 추가 버튼을 누르면
-        // 메인액티비티를 거쳐 일정 추가 프래그먼트로 이동
-        // Intent로 전달된 데이터 확인
-//        val fragmentToOpen = intent.getStringExtra("fragment_to_open")
-//        Log.d("fragmentToOpen", fragmentToOpen.toString())
-//        moveToEventFragment(fragmentToOpen)
+        // 닉네임 변경 화면으로 이동
+        findViewById<Button>(R.id.btnNickChange)?.setOnClickListener {
+            val intent = Intent(this, InfoActivity::class.java)
+            activityResultLauncher.launch(intent)
+        }
+    }
+
+    private fun updateFragmentNickname(newNick: String) {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.mainContent)
+        if (currentFragment is SettingsFragment) {
+            currentFragment.updateNickname(newNick)
+        }
     }
 
     private fun toggleGroupItems() {
@@ -110,16 +144,5 @@ class MainActivity : AppCompatActivity() {
         navItem1.visibility = if (isGroupExpanded) View.VISIBLE else View.GONE
         navItem2.visibility = if (isGroupExpanded) View.VISIBLE else View.GONE
         navGroup.text = if (isGroupExpanded) "그룹 (축소)" else "그룹 (확장)"
-    }
-
-    private fun moveToEventFragment(fragment: String?) {
-        // Fragment를 추가하거나 교체
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-
-        if (fragment == "EventFragment") {
-            fragmentTransaction.replace(R.id.mainContent, EventFragment())
-        }
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
     }
 }

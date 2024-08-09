@@ -38,8 +38,6 @@ class JoinActivity : AppCompatActivity() {
 
         queue = Volley.newRequestQueue(this@JoinActivity)
 
-
-
         // TextWatcher 설정
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -99,6 +97,7 @@ class JoinActivity : AppCompatActivity() {
 
             }
         }
+
     }
     private fun validatePasswords() {
         val joinPw = etJoinPw.text.toString()
@@ -117,5 +116,4 @@ class JoinActivity : AppCompatActivity() {
             }
         }
     }
-
 }

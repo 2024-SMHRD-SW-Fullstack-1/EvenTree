@@ -14,13 +14,18 @@
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:mcv_headerTextAppearance="@style/CalendarHeaderStyle"
+            app:mcv_selectionColor="#F27272"
             app:mcv_showOtherDates="all"
-            app:mcv_tileWidth="match_parent"
-            app:mcv_tileHeight="match_parent" />
+            app:mcv_tileHeight="match_parent"
+            app:mcv_tileWidth="match_parent">
+
+        </com.prolificinteractive.materialcalendarview.MaterialCalendarView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

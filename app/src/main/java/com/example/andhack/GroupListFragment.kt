@@ -56,7 +56,7 @@ class GroupListFragment : DialogFragment() {
 
         val request = object : JsonArrayRequest(
             Request.Method.GET,
-            "http://192.168.219.43:8089/IZG/groups",
+            "http://192.168.219.63:8089/IZG/groups",
             null,
             { response ->
                 groupListContainer.removeAllViews()
@@ -86,7 +86,7 @@ class GroupListFragment : DialogFragment() {
             setPadding(16, 16, 16, 16)
 
             // 점을 텍스트 앞에 추가
-            val drawable = resources.getDrawable(R.drawable.dot_drawable, null)
+            val drawable = resources.getDrawable(R.drawable.grouplist_dot, null)
             setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
             compoundDrawablePadding = 16 // 점과 텍스트 사이의 간격
         }

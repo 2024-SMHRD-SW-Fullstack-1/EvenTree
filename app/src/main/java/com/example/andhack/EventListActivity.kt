@@ -41,6 +41,7 @@ class EventListActivity : AppCompatActivity() {
         tvDate = binding.tvDate
 
         date = intent.getStringExtra("date") ?: ""
+        Log.d("date", date)
         year = intent.getStringExtra("year") ?: ""
         month = intent.getStringExtra("month") ?: ""
         day = intent.getStringExtra("day") ?: ""
@@ -48,7 +49,6 @@ class EventListActivity : AppCompatActivity() {
         tvDate.text = date
 
         val rvEvent = binding.rvEvent
-        val btnAddEvent = binding.btnAddEvent
 
         // 큐 초기화
         requestQueue = Volley.newRequestQueue(this@EventListActivity)
@@ -77,6 +77,7 @@ class EventListActivity : AppCompatActivity() {
     }
 
     private fun refreshEventList() {
+        val token = SharedPrefManager.getToken(this)
         val jsonObject = JSONObject().apply {
             put("date", date)
             put("year", year)
@@ -87,7 +88,7 @@ class EventListActivity : AppCompatActivity() {
         requestQueue.cache.clear()
         val request = object : StringRequest(
             Request.Method.POST,
-            "http://39.114.154.29:8089/IZG/get-events",
+            "http://192.168.219.63:8089/IZG/get-events",
             { response ->
                 Log.d("events response", response)
 
@@ -112,13 +113,14 @@ class EventListActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
             },
             { error ->
-                Log.e("Error", "Error: ${error.message}")
+                Log.e("eventList error", "Error: ${error.message}")
                 Toast.makeText(this, "Error fetching events", Toast.LENGTH_SHORT).show()
             }
         ) {
             override fun getHeaders(): Map<String, String> {
                 val headers = HashMap<String, String>()
                 headers["Content-Type"] = "application/json; charset=utf-8"
+                headers["Authorization"] = "Bearer $token" // 필요시 인증 토큰 추가
                 return headers
             }
             override fun getBodyContentType(): String {

@@ -9,4 +9,7 @@
     <string name="password_mismatch">불일치</string>
     <!-- 기본 텍스트 색상 -->
     <string name="password_empty" />
+
+    <string name="yes">예</string>
+    <string name="no">아니오</string>
 </resources>

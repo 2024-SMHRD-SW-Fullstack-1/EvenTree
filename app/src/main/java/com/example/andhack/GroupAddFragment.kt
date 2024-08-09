@@ -89,7 +89,7 @@ class GroupAddFragment : Fragment() {
 
             val request = object: StringRequest(
                 Request.Method.POST,
-                "http://192.168.219.43:8089/IZG/group",
+                "http://192.168.219.63:8089/IZG/group",
                 { response ->
                     println("Response: $response")
                     if (activity is MainActivity) {

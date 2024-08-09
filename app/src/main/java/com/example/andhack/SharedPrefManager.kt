@@ -11,13 +11,15 @@ object SharedPrefManager {
         return context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE)
     }
 
-    fun saveToken(context: Context, token:String){
+    fun saveToken(context: Context,token:String){
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val editor = getPreferences(context)?.edit()
         editor?.putString(KEY_TOKEN,token)
         editor?.apply()
     }
 
     fun getToken(context: Context):String?{
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         return getPreferences(context)?.getString(KEY_TOKEN,null)
     }
 

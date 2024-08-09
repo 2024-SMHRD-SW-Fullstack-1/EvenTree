@@ -173,10 +173,8 @@ class EventDetailActivity : AppCompatActivity() {
                 // 기존 텍스트에 새 텍스트를 추가
                 val existingText = tvMemo.text.toString()
                 val newText = if (existingText.isEmpty()) {
-//                    btnSave.visibility = View.VISIBLE
                     memoText // 첫 번째 메모 입력 시
                 } else {
-//                    btnMenu.visibility = View.VISIBLE // 메모내용이 없으면 메뉴바 사라지게하기
                     "$existingText\n$memoText"
                 }
                 Log.d("memoresult", newText) // 입력한 값들 누적된것 = newText
@@ -188,8 +186,6 @@ class EventDetailActivity : AppCompatActivity() {
         }
 
     }
-
-    //
 
     fun showDatePicker(targetTextView: TextView, isStartDate: Boolean) {
         val calendar = Calendar.getInstance()
@@ -344,7 +340,7 @@ class EventDetailActivity : AppCompatActivity() {
 
     fun saveEvent(eventVO: EventVO){
         val token = SharedPrefManager.getToken(this)
-        val url = "http://39.114.154.29:8089/IZG/add-event" //서버 주소
+        val url = "http://192.168.219.63:8089/IZG/add-event" //서버 주소
         // val jsonRequest = JSONObject(Gson().toJson(eventVO))
 
         // JSON 객체 생성
@@ -391,7 +387,7 @@ class EventDetailActivity : AppCompatActivity() {
 
     fun updateEvent(eventVO: EventVO) {
         val token = SharedPrefManager.getToken(this)
-        val url = "http://39.114.154.29:8089/IZG/update-event" // 서버 주소
+        val url = "http://192.168.219.63:8089/IZG/update-event" // 서버 주소
 
         // JSON 객체 생성
         val jsonObject = JSONObject().apply {
@@ -416,12 +412,10 @@ class EventDetailActivity : AppCompatActivity() {
                     btnSave.visibility = View.INVISIBLE // 메모 작성 후 저장버튼 사라짐
                 } catch (e: JSONException) {
                     Log.e("update response", "Response is not a valid JSON object: $response")
-                    Toast.makeText(this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             },
             { error ->
                 Log.e("Err", error.toString())
-                Toast.makeText(this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
         ) {
             override fun getHeaders(): Map<String, String> {
@@ -443,7 +437,7 @@ class EventDetailActivity : AppCompatActivity() {
 
     fun deleteEvent(eIdx: Int){
         val token = SharedPrefManager.getToken(this)
-        val url = "http://39.114.154.29:8089/IZG/delete-event"
+        val url = "http://192.168.219.63:8089/IZG/delete-event"
 
         // eIdx를 JSON 객체로 변환
         val jsonRequest = JSONObject()
@@ -461,9 +455,10 @@ class EventDetailActivity : AppCompatActivity() {
                     putExtra("year", year)
                     putExtra("month", month)
                     putExtra("day", day)
+                    // 플래그 추가
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 }
                 startActivity(intent)
-                finish() // 현재 Activity 종료
             },
             { error ->
                 Log.d("error", error.toString())

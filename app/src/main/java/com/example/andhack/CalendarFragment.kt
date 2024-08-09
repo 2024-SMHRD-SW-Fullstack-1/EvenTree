@@ -1,18 +1,17 @@
 package com.example.andhack
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
 import android.text.style.ForegroundColorSpan
-import android.text.style.LineBackgroundSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -20,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.andhack.databinding.FragmentCalendarBinding
@@ -32,6 +30,7 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import com.prolificinteractive.materialcalendarview.spans.DotSpan
 import org.json.JSONArray
+import org.json.JSONObject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -39,10 +38,10 @@ import java.util.Calendar
 class CalendarFragment : Fragment() {
     private lateinit var binding: FragmentCalendarBinding
     private lateinit var calendar: MaterialCalendarView
-    private val events = mutableListOf<CalendarDay>()
     private var selectedDate: CalendarDay? = null
     private lateinit var viewModel: SharedViewModel
     lateinit var queue: RequestQueue
+    private var existPlan = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,18 +64,11 @@ class CalendarFragment : Fragment() {
         // DB에서 일정 가져오기
         fetchEvents()
 
-        // 색칠할 날짜를 calendarDayList에 추가
-        // events.add(CalendarDay.from(2022, 5, 25))
-        // events.add(CalendarDay.from(2022, 5, 24))
-        // events.add(CalendarDay.from(2022, 5, 23))
-
         // 오늘 날짜 선택
-        calendar.setSelectedDate(CalendarDay.today())
+        // calendar.setSelectedDate(CalendarDay.today())
 
         // Decorator
-        // ToDay Decorator
         val todayDecorator = ToDayDecorator(requireContext())
-        // Saturday and Sunday Decorators
         val saturdayDecorator = SaturdayDecorator()
         val sundayDecorator = SundayDecorator()
         val selectedDecorator = SelectedDecorator(requireContext())
@@ -104,6 +96,7 @@ class CalendarFragment : Fragment() {
         // ViewModel에 날짜 설정
         // 클릭한 날짜 값 date(YYYY-MM-DD), year, month, day로 넘기기
         calendar.setOnDateChangedListener { widget, date, selected ->
+            binding.calendarView.invalidateDecorators() // 데코레이터 새로고침
             if (selected) {
                 // date :
                 // 날짜 부분 추출
@@ -123,20 +116,26 @@ class CalendarFragment : Fragment() {
                 // 날짜와 시간 출력
                 Log.d("localDate", localDate.toString()) // 출력: 2024-08-23T00:00
 
-                // intent로 데이터 date, year, month, day 넘기기
-                val intent = Intent(requireActivity(), EventListActivity::class.java)
-                intent.putExtra("date", localDate.toString())
-                intent.putExtra("year", localDate.year.toString())
-                intent.putExtra("month", localDate.monthValue.toString().padStart(2, '0'))
-                intent.putExtra("day", localDate.dayOfMonth.toString().padStart(2, '0'))
-                startActivity(intent)
+                if (existPlan) {
+                    // 일정이 있다면 일정 리스트 화면으로 이동
+                    // intent로 데이터 date, year, month, day 넘기기
+                    val intent = Intent(requireActivity(), EventListActivity::class.java)
+                    intent.putExtra("date", localDate.toString())
+                    intent.putExtra("year", localDate.year.toString())
+                    intent.putExtra("month", localDate.monthValue.toString().padStart(2, '0'))
+                    intent.putExtra("day", localDate.dayOfMonth.toString().padStart(2, '0'))
+                    startActivity(intent)
+                } else {
+                    // 일정이 없다면 이동하지 않음
+
+                }
+
             }
 
             viewModel.setSelectedDate(date)
             selectedDate = date
             selectedDecorator.setDate(selectedDate)
-            Log.d("CalFragment clicked", selectedDate.toString())
-            binding.calendarView.invalidateDecorators() // 데코레이터 새로고침
+            Log.d("CalFragment clicked", selectedDate.toString());
         }
     }
 
@@ -144,8 +143,9 @@ class CalendarFragment : Fragment() {
     inner class ToDayDecorator(context: Context) : DayViewDecorator {
 
         private var date = CalendarDay.today()
+        @SuppressLint("UseCompatLoadingForDrawables")
         val drawble =
-            context?.resources?.getDrawable(com.example.andhack.R.drawable.date_today_deco, null)
+            context?.resources?.getDrawable(R.drawable.calendar_today, null)
 
         override fun shouldDecorate(day: CalendarDay?): Boolean {
             return day?.equals(date)!!
@@ -201,9 +201,10 @@ class CalendarFragment : Fragment() {
 
         private var date = selectedDate
 
+        @SuppressLint("UseCompatLoadingForDrawables")
         val drawble =
             context?.resources?.getDrawable(
-                com.example.andhack.R.drawable.calendar_selected_date_background,
+                R.drawable.calendar_selected_date,
                 null
             )
 
@@ -260,7 +261,7 @@ class CalendarFragment : Fragment() {
 
             override fun decorate(view: DayViewFacade) {
                 // 이벤트가 있는 날짜에 점을 추가하여 표시한다.
-                view.addSpan(DotSpan(10F, ContextCompat.getColor(context, R.color.primary_color)))
+                view.addSpan(DotSpan(10F, ContextCompat.getColor(context, R.color.calendar_dot)))
             }
 
             /**
@@ -290,7 +291,8 @@ class CalendarFragment : Fragment() {
 
     private fun fetchEvents() {
         Log.d("fetch events", "fetching events")
-        val url = "http://39.114.154.29:8089/IZG/get-all-events"
+        val token = SharedPrefManager.getToken(requireContext())
+        val url = "http://192.168.219.63:8089/IZG/get-all-events"
 
         val request = @RequiresApi(Build.VERSION_CODES.O)
         object : StringRequest(
@@ -334,6 +336,13 @@ class CalendarFragment : Fragment() {
                 Log.e("Volley", "Error fetching events: ${error.message}")
             }
         ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Content-Type"] = "application/json; charset=utf-8"
+                headers["Authorization"] = "Bearer $token"
+                return headers
+            }
+
             // GET 요청에는 바디가 필요 없으므로 getBodyContentType을 오버라이드할 필요 없음
             override fun getBodyContentType(): String {
                 return "application/json; charset=utf-8"
