@@ -34,6 +34,7 @@ public class EventController {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
+<<<<<<< HEAD
 	// 일정 추가
 	@PostMapping("/add-event")
 	public String addEvent(@RequestHeader("Authorization") String token, @RequestBody EventModel ev) throws JsonMappingException, JsonProcessingException {
@@ -50,6 +51,41 @@ public class EventController {
 		return "OK";
 	}
 
+=======
+	// 일정 추가 및 수정
+	@PostMapping("/add-event")
+	public EventModel addEvent(@RequestHeader("Authorization") String token, @RequestBody EventModel ev) {
+	    if (token.startsWith("Bearer ")) {
+	        token = token.substring(7);
+	    }
+
+	    int mIdx = jwtTokenProvider.getMIdx(token);
+	    ev.setMIdx(mIdx);
+	    
+	    // 저장 후 반환
+	    EventModel addedEvent = eventService.addEvent(ev);
+	    System.out.println("added event : " + addedEvent);
+	    return addedEvent;
+	}
+	
+	// 일정 수정
+		@PostMapping("/update-event")
+		public ResponseEntity<String> updateEvent(@RequestHeader("Authorization") String token, @RequestBody EventModel ev) {
+		    if (token.startsWith("Bearer ")) {
+		        token = token.substring(7);
+		    }
+		    System.out.println("received event to update : " + ev.toString());
+		    
+		    int mIdx = jwtTokenProvider.getMIdx(token);
+		    ev.setMIdx(mIdx);
+		    
+		    // 저장 후 반환
+		    eventService.updateEvent(ev);
+		    System.out.println("updated event");
+			return ResponseEntity.ok("Event updated successfully");
+		}
+		
+>>>>>>> e143bb5789134809edd8d1007eff39ca138cc3c0
 	// 일정 찾기
 	@PostMapping("/get-events")
 	public List<EventModel> getEventsByDate(@RequestBody Map<String, String> request) {
@@ -77,4 +113,15 @@ public class EventController {
 		System.out.println("sent all events : " + eventService.getAllEvents());
         return eventService.getAllEvents();
     }
+<<<<<<< HEAD
+=======
+	
+	@PostMapping("/delete-event")
+    public ResponseEntity<String> deleteEvent(@RequestBody Map<String, Integer> request) {
+        int eIdx = request.get("eIdx");
+        eventService.deleteEvent(eIdx);
+        System.out.println("delete " + eIdx + " event");
+        return ResponseEntity.ok(eIdx + " Event deleted successfully");
+    }
+>>>>>>> e143bb5789134809edd8d1007eff39ca138cc3c0
 }
