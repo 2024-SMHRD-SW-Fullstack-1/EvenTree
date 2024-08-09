@@ -1,7 +1,6 @@
 package com.example.andhack
 
 import android.app.AlertDialog
-import android.media.metrics.Event
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,14 +18,13 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.andhack.databinding.FragmentEventBinding
 import com.google.gson.Gson
-import com.prolificinteractive.materialcalendarview.CalendarDay
+import org.json.JSONException
 import org.json.JSONObject
 import java.util.Calendar
 
@@ -47,6 +45,7 @@ class EventFragment : Fragment() {
     lateinit var btnInput: Button
     lateinit var tvMemo: TextView
     lateinit var queue: RequestQueue
+    var eIdx: Int? = null
     var startDate: Calendar? = null
     var endDate: Calendar? = null
     var startTime: Pair<Int, Int>? = null
@@ -63,8 +62,6 @@ class EventFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
 
         btnClose = binding.btnClose
         btnSave = binding.btnSave
@@ -125,8 +122,13 @@ class EventFragment : Fragment() {
                 val startDate = "${startDateValue}T${startTimeValue}:00"
                 val endDate = "${endDateValue}T${endTimeValue}:00"
 
-                val event = EventVO(title, mIdx, startDate, endDate, content)
-                saveEvent(event)
+                val event = EventVO(eIdx, title, mIdx, startDate, endDate, content)
+                if (eIdx == null) {
+                    saveEvent(event)
+                } else {
+                    updateEvent(event)
+                }
+
                 Toast.makeText(requireContext(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "내용을 입력해 주세요.", Toast.LENGTH_SHORT).show()
@@ -163,10 +165,8 @@ class EventFragment : Fragment() {
                 // 기존 텍스트에 새 텍스트를 추가
                 val existingText = tvMemo.text.toString()
                 val newText = if (existingText.isEmpty()) {
-//                    btnSave.visibility = View.VISIBLE
-                    memoText // 첫 번째 메모 입력 시
+                    memoText
                 } else {
-//                    btnMenu.visibility = View.VISIBLE // 메모내용이 없으면 메뉴바 사라지게하기
                     "$existingText\n$memoText"
                 }
                 Log.d("memoresult", newText) // 입력한 값들 누적된것 = newText
@@ -178,8 +178,6 @@ class EventFragment : Fragment() {
         }
 
     }
-
-    //
 
     fun showDatePicker(targetTextView: TextView, isStartDate: Boolean) {
         val calendar = Calendar.getInstance()
@@ -275,7 +273,6 @@ class EventFragment : Fragment() {
             } else {
                 endTime = Pair(hour, minute)
 
-
                 // 시작 시간과 종료 시간 비교
                 startTime?.let { start ->
                     if (startDate != null && endDate != null && startDate!!.timeInMillis == endDate!!.timeInMillis) {
@@ -320,6 +317,8 @@ class EventFragment : Fragment() {
                     etMemo.text.clear()
                     tvMemo.text = ""
 
+                    eIdx?.let { deleteEvent(it) }
+
                     // 삭제 후, 캘린더로 이동
                     requireActivity().supportFragmentManager.beginTransaction()
                         .replace(R.id.mainContent, CalendarFragment())
@@ -335,9 +334,7 @@ class EventFragment : Fragment() {
 
     fun saveEvent(eventVO: EventVO){
         val token = SharedPrefManager.getToken(requireContext())
-        val url = "http://192.168.219.56:8089/IZG/add-event" //서버 주소
-        // val jsonRequest = JSONObject(Gson().toJson(eventVO))
-
+        val url = "http://39.114.154.29:8089/IZG/add-event" //서버 주소
 
         // JSON 객체 생성
         val jsonObject = JSONObject().apply {
@@ -347,14 +344,17 @@ class EventFragment : Fragment() {
             put("endDate", eventVO.endDate)
         }
 
-        Log.d("eventVO", eventVO.toString())
-        // Log.d("JSON Request", jsonRequest.toString())
+        Log.d("save eventVO", eventVO.toString())
+
         val request = object : StringRequest(
             Request.Method.POST,
             url,
             {response ->
                 Log.d("res!", response)
-                println("Res: $response")
+
+                // event를 다시 반환 받아서 eIdx를 통해 일정을 삭제가 가능함
+                val event: EventVO = Gson().fromJson(response.toString(), EventVO::class.java)
+                eIdx = event.eIdx
                 btnSave.visibility = View.INVISIBLE //메모 작성 후 저장버튼 사라짐
             },
             {error ->
@@ -376,6 +376,95 @@ class EventFragment : Fragment() {
             }
         }
         queue.add(request)
+    }
 
+    fun updateEvent(eventVO: EventVO) {
+        val token = SharedPrefManager.getToken(requireContext())
+        val url = "http://39.114.154.29:8089/IZG/update-event" // 서버 주소
+
+        // JSON 객체 생성
+        val jsonObject = JSONObject().apply {
+            put("eIdx", eventVO.eIdx)
+            put("title", eventVO.title)
+            put("content", eventVO.content)
+            put("startDate", eventVO.startDate)
+            put("endDate", eventVO.endDate)
+        }
+
+        Log.d("update eventVO", eventVO.toString())
+        Log.d("JSON Request", jsonObject.toString())
+
+        val request = object : StringRequest(
+            Request.Method.POST,
+            url,
+            { response ->
+                // 서버 응답이 JSON 객체가 아니라면, 원래 문자열 응답을 로깅합니다
+                try {
+                    val jsonResponse = JSONObject(response)
+                    Log.d("update response", jsonResponse.toString())
+                    btnSave.visibility = View.INVISIBLE // 메모 작성 후 저장버튼 사라짐
+                } catch (e: JSONException) {
+                    Log.e("update response", "Response is not a valid JSON object: $response")
+                    Toast.makeText(requireContext(), "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            },
+            { error ->
+                Log.e("Err", error.toString())
+                Toast.makeText(requireContext(), "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Content-Type"] = "application/json; charset=utf-8"
+                headers["Authorization"] = "Bearer $token" // 필요시 인증 토큰 추가
+                return headers
+            }
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+            override fun getBody(): ByteArray {
+                return jsonObject.toString().toByteArray(Charsets.UTF_8)
+            }
+        }
+
+        queue.add(request)
+    }
+
+    fun deleteEvent(eIdx: Int){
+        val token = SharedPrefManager.getToken(requireContext())
+        val url = "http://39.114.154.29:8089/IZG/delete-event"
+
+        // eIdx를 JSON 객체로 변환
+        val jsonRequest = JSONObject()
+        jsonRequest.put("eIdx", eIdx)
+        Log.d("delete eIdx", eIdx.toString())
+
+        val request = object : StringRequest(
+            Request.Method.POST,
+            url,
+            { response ->
+                Log.d("delete response", response)
+            },
+            { error ->
+                Log.d("error", error.toString())
+                Toast.makeText(requireContext(), "삭제에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Content-Type"] = "application/json; charset=utf-8"
+                headers["Authorization"] = "Bearer $token"
+                return headers
+            }
+
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+
+            override fun getBody(): ByteArray {
+                return jsonRequest.toString().toByteArray(Charsets.UTF_8)
+            }
+        }
+        queue.add(request)
     }
 }

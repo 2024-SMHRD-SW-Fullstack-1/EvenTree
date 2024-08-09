@@ -16,4 +16,11 @@
         <item name="itemTextAppearanceActive">@style/BottomNavigationActiveText</item>
         <item name="itemTextAppearanceInactive">@style/BottomNavigationInactiveText</item>
     </style>
+
+    <style name="CustomDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

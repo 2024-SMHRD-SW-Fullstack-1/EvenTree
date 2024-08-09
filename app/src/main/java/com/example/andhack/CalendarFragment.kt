@@ -62,15 +62,13 @@ class CalendarFragment : Fragment() {
         // RequestQueue 초기화
         queue = Volley.newRequestQueue(requireContext())
 
-        // DB에서 날짜 가져오기
+        // DB에서 일정 가져오기
         fetchEvents()
 
-
-
         // 색칠할 날짜를 calendarDayList에 추가
-        events.add(CalendarDay.from(2022, 5, 25))
-        events.add(CalendarDay.from(2022, 5, 24))
-        events.add(CalendarDay.from(2022, 5, 23))
+        // events.add(CalendarDay.from(2022, 5, 25))
+        // events.add(CalendarDay.from(2022, 5, 24))
+        // events.add(CalendarDay.from(2022, 5, 23))
 
         // 오늘 날짜 선택
         calendar.setSelectedDate(CalendarDay.today())
@@ -90,18 +88,17 @@ class CalendarFragment : Fragment() {
             saturdayDecorator,
             sundayDecorator,
             selectedDecorator,
-
         )
 
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         // 달력 화면 접속 시 ViewModel에 있는 선택된 날짜 데이터를 불러오기
-        viewModel.selectedDate.observe(viewLifecycleOwner, { date ->
+        viewModel.selectedDate.observe(viewLifecycleOwner) { date ->
             selectedDate = date
             Log.d("CalFragment entered", date.toString())
             selectedDecorator.setDate(selectedDate)
             binding.calendarView.invalidateDecorators() // 데코레이터 새로고침
-        })
+        }
 
         // 날짜 선택 시
         // ViewModel에 날짜 설정
@@ -291,11 +288,9 @@ class CalendarFragment : Fragment() {
         }
     }
 
-
-
-
     private fun fetchEvents() {
-        val url = "http://192.168.219.63:8089/IZG/get-all-events"
+        Log.d("fetch events", "fetching events")
+        val url = "http://39.114.154.29:8089/IZG/get-all-events"
 
         val request = @RequiresApi(Build.VERSION_CODES.O)
         object : StringRequest(
@@ -311,9 +306,26 @@ class CalendarFragment : Fragment() {
                     val eventList: List<EventVO> = gson.fromJson(jsonArray.toString(), type)
                     // 이벤트를 처리하는 로직
                     Log.d("Parsed Events", eventList.toString())
-                    // 이벤트 데코레이터 생성 및 추가
+
+                    // 기존의 이벤트 데코레이터를 제거
+                    calendar.removeDecorators()
+
+                    // 데코레이터 생성
+                    val todayDecorator = ToDayDecorator(requireContext())
+                    val saturdayDecorator = SaturdayDecorator()
+                    val sundayDecorator = SundayDecorator()
+                    val selectedDecorator = SelectedDecorator(requireContext())
                     val eventDecorator = eventDecorator(requireContext(), eventList)
-                    calendar.addDecorator(eventDecorator)
+
+                    // 데코레이터 추가
+                    calendar.addDecorators(
+                        todayDecorator,
+                        saturdayDecorator,
+                        sundayDecorator,
+                        selectedDecorator,
+                        eventDecorator
+                    )
+                    binding.calendarView.invalidateDecorators() // 데코레이터 새로고침
                 } catch (e: Exception) {
                     Log.e("Parsing Error", "Failed to parse events: ${e.message}")
                 }
@@ -330,5 +342,13 @@ class CalendarFragment : Fragment() {
 
         // RequestQueue에 요청 추가
         queue.add(request)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        super.onResume()
+
+        // DB에서 일정 가져오기
+        fetchEvents()
     }
 }

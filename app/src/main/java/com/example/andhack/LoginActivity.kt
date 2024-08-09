@@ -64,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
 
             val request = object: StringRequest(
                 Request.Method.POST,
-                "http://192.168.219.63:8089/IZG/login",
+                "http://39.114.154.29:8089/IZG/login",
                 {response ->
                     println("Response: $response")
 
