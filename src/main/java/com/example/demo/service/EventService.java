@@ -7,10 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-<<<<<<< HEAD
-=======
 import org.springframework.transaction.annotation.Transactional;
->>>>>>> e143bb5789134809edd8d1007eff39ca138cc3c0
 
 import com.example.demo.model.EventModel;
 import com.example.demo.repository.EventRepository;
@@ -22,12 +19,6 @@ public class EventService {
 	EventRepository eventRepository;
 
 	// 일정 추가
-<<<<<<< HEAD
-	public void addEvent(EventModel ev) {
-		eventRepository.save(ev);
-	}
-	
-=======
 	public EventModel addEvent(EventModel ev) {
 		return eventRepository.save(ev);
 	}
@@ -49,7 +40,6 @@ public class EventService {
         }
     }
 	
->>>>>>> e143bb5789134809edd8d1007eff39ca138cc3c0
 	// 선택된 하루의 일정 찾기
 	public List<EventModel> getEventsByDate(String date) {
         LocalDate localDate = LocalDate.parse(date);
@@ -65,13 +55,9 @@ public class EventService {
 	public List<EventModel> getAllEvents() {
         return eventRepository.findAll();
     }
-<<<<<<< HEAD
-=======
-	
 	
 	@Transactional
     public void deleteEvent(int eIdx) {
         eventRepository.deleteByEIdx(eIdx);
     }
->>>>>>> e143bb5789134809edd8d1007eff39ca138cc3c0
 }

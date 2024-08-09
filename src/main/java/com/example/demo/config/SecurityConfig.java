@@ -31,11 +31,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-<<<<<<< HEAD
-                    .requestMatchers("/login", "/join", "/add-event", "/get-events", "/get-all-events").permitAll()
-=======
                     .requestMatchers("/login", "/join", "/add-event", "/update-event", "/get-events", "/get-all-events", "/delete-event").permitAll()
->>>>>>> e143bb5789134809edd8d1007eff39ca138cc3c0
                     .anyRequest().authenticated()
             )
             .sessionManagement(sessionManagement ->
